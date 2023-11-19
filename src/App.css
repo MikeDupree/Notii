@@ -1,0 +1,40 @@
+.logo.vite:hover {
+  filter: drop-shadow(0 0 2em #747bff);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafb);
+}
+
+/*
+ * Editor styling
+ */
+.editor h1,
+.editor h2,
+.editor h3,
+.editor h4 {
+  text-align: left;
+}
+.editor h1 {
+  font-size: 2.2rem;
+  margin-bottom: 45px;
+}
+
+.editor h2 {
+  font-size: 1.4rem;
+}
+
+.editor h3 {
+  font-size: 1.2rem;
+}
+
+.editor,
+.editor div,
+.editor-view {
+  height: 100%;
+}
+.editor div div:focus {
+  outline: none !important; /* Remove the default focus outline */
+  box-shadow: none !important; /* Remove any box-shadow on focus */
+  border-color: transparent !important; /* Set border color to transparent on focus */
+}

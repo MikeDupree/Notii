@@ -1,0 +1,38 @@
+{
+  "name": "notii",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"tailwindcss -i ./src/styles.css -o ./src/build.css --watch\"",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "css:compile": "tailwindcss -i ./src/styles.css -o ./src/build.css --watch"
+  },
+  "dependencies": {
+    "@lexical/react": "^0.12.4",
+    "@mdxeditor/editor": "^1.9.0",
+    "@tauri-apps/api": "^1.5.1",
+    "autoprefixer": "^10.4.16",
+    "lexical": "^0.12.4",
+    "postcss-cli": "^10.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
+    "remark-parse": "^11.0.0",
+    "tailwindcss": "^3.3.5",
+    "textarea-markdown": "^1.4.0",
+    "unified": "^11.0.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.6",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "concurrently": "^8.2.2",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.4"
+  }
+}
