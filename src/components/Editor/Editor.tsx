@@ -94,15 +94,13 @@ function Editor({ filename }: EditorProps) {
   }
 
   return (
-    <div className="container" key={`editor-cont--${uuidv4()}`}>
-      <div className="">
-        <LexicalEditor
-          key={`editor--${uuidv4()}`}
-          initialEditorState={editorState}
-          onChange={onChange}
-          onError={onError}
-        />
-      </div>
+    <div className="container h-full w-full" key={`editor-cont--${uuidv4()}`}>
+      <LexicalEditor
+        key={`editor--${uuidv4()}`}
+        initialEditorState={editorState}
+        onChange={onChange}
+        onError={onError}
+      />
     </div>
   );
 }

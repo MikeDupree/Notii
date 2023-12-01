@@ -1,15 +1,8 @@
-import {
-  $getRoot,
-  $getSelection,
-  EditorState,
-  LexicalEditor,
-  SerializedEditor,
-  SerializedLexicalNode,
-} from "lexical";
-import { useEffect, useRef } from "react";
-
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
+import { invoke } from "@tauri-apps/api";
 
+import { EditorState, LexicalEditor } from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { PlainTextPlugin } from "@lexical/react/LexicalPlainTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -17,7 +10,6 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
-import { invoke } from "@tauri-apps/api";
 
 const theme = {
   // Theme styling goes here
@@ -44,25 +36,27 @@ function MySavePlugin() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Check if the key combination is Ctrl/Meta + S
-      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
-        event.preventDefault(); // Prevent the default browser save action
-        const editorState = editor.getEditorState();
-        const json = editorState.toJSON();
-        const file = {
-          title: json?.root?.children?.[0]?.children?.[0]?.text,
-          editorState: JSON.stringify(editorState.toJSON()),
-        };
-        console.debug("Saving File::", file);
-        toast.promise(invoke("save_file", file), {
-          loading: "Saving...",
-          success: () => {
-            return <b>File saved!</b>;
-          },
-          error: (res) => {
-            console.error("save_file::error", res);
-            return <b>Could not save.</b>;
-          },
-        });
+      if (event.ctrlKey || event.metaKey) {
+        if (event.key === "s") {
+          event.preventDefault(); // Prevent the default browser save action
+          const editorState = editor.getEditorState();
+          const json = editorState.toJSON();
+          const file = {
+            title: json?.root?.children?.[0]?.children?.[0]?.text,
+            editorState: JSON.stringify(editorState.toJSON()),
+          };
+          console.debug("Saving File::", file);
+          toast.promise(invoke("save_file", file), {
+            loading: "Saving...",
+            success: () => {
+              return <b>File saved!</b>;
+            },
+            error: (res) => {
+              console.error("save_file::error", res);
+              return <b>Could not save.</b>;
+            },
+          });
+        }
       }
     };
 
@@ -88,11 +82,9 @@ export interface CustomLexicalEditorProps {
   onError: (error: Error, editor: LexicalEditor) => void;
 }
 
-export default function CustomLexicalEditor({
-  initialEditorState,
-  onChange,
-  onError,
-}: CustomLexicalEditorProps) {
+export default function CustomLexicalEditor(props: CustomLexicalEditorProps) {
+  const { initialEditorState, onChange, onError } = props;
+
   const initialConfig = {
     namespace: "NotiiEditor",
     theme,
@@ -107,7 +99,7 @@ export default function CustomLexicalEditor({
   return (
     <LexicalComposer initialConfig={initialConfig}>
       <PlainTextPlugin
-        contentEditable={<ContentEditable />}
+        contentEditable={<ContentEditable className="h-full" />}
         placeholder={<div>Enter some text...</div>}
         ErrorBoundary={LexicalErrorBoundary}
       />

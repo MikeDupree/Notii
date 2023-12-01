@@ -6,28 +6,6 @@
   filter: drop-shadow(0 0 2em #61dafb);
 }
 
-/*
- * Editor styling
- */
-.editor h1,
-.editor h2,
-.editor h3,
-.editor h4 {
-  text-align: left;
-}
-.editor h1 {
-  font-size: 2.2rem;
-  margin-bottom: 45px;
-}
-
-.editor h2 {
-  font-size: 1.4rem;
-}
-
-.editor h3 {
-  font-size: 1.2rem;
-}
-
 .editor,
 .editor div,
 .editor-view {

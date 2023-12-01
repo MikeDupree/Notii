@@ -6,10 +6,11 @@ use tauri::{Manager, SystemTray, SystemTrayEvent, SystemTrayMenu};
 
 // For file saving
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
+use serde_json::{Number, Value};
 use std::fs::{self, File, OpenOptions};
 use std::io::prelude::*;
-use std::io::{self, Read};
+use std::io::{self, BufRead, Read};
+use walkdir::WalkDir;
 
 // For determining home dir
 use dirs::home_dir;
@@ -134,6 +135,60 @@ fn read_directory(path: &str) -> String {
     json_result.ok().unwrap().to_string()
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+struct FileMatch {
+    filename: String,
+    line_number: usize,
+}
+
+#[tauri::command]
+fn search_files(search_text: &str) -> String {
+    let mut file_matches: Vec<FileMatch> = vec![];
+
+    let home_dir = home_dir().expect("Unable to determine home directory");
+    // Specify the file path relative to the home directory
+    let path_to_check = home_dir.join(".notii");
+    for entry in WalkDir::new(path_to_check)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
+        if entry.file_type().is_file() {
+            if let Some(file_name) = entry.file_name().to_str() {
+                println!("Checking {}", file_name);
+
+                if let Ok(file) = File::open(entry.path()) {
+                    println!("File Opened");
+                    let reader = io::BufReader::new(file);
+                    for (line_number, line) in reader.lines().enumerate() {
+                        println!("Line {}", line_number);
+                        if let Ok(line) = line {
+                            if line.contains(search_text) {
+                                // Create an instance of your data structure
+                                let file_match = FileMatch {
+                                    filename: file_name.to_string(),
+                                    line_number,
+                                };
+                                file_matches.push(file_match);
+                                println!(
+                                    "Found '{}' in {}:{} - {}",
+                                    search_text,
+                                    file_name,
+                                    line_number + 1,
+                                    line
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Serialize the data to JSON
+    let serialized_data = serde_json::to_string(&file_matches).expect("Unable to serialize data");
+    serialized_data
+}
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -164,7 +219,8 @@ fn main() {
             greet,
             read_file,
             save_file,
-            read_directory
+            read_directory,
+            search_files,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
